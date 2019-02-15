@@ -2,9 +2,9 @@ import Link from 'next/link'
 
 import Items from '../components/Items'
 
-const Home = () => (
+const Home = props => (
   <div>
-    <Items />
+    <Items page={parseFloat(props.query.page) || 1} />
   </div>
 )
 
