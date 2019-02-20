@@ -43,7 +43,6 @@ class CreateItem extends Component {
   }
 
   uploadFile = async e => {
-    console.log('uploading file')
     const files = e.target.files
     const data = new FormData()
     data.append('file', files[0])
@@ -57,11 +56,18 @@ class CreateItem extends Component {
       }
     )
     const file = await res.json()
-    console.log(file)
-    this.setState({
-      image: file.secure_url,
-      largeImage: file.eager[0].secure_url,
-    })
+
+    if (file.error) {
+      this.setState({
+        image: '',
+        largeImage: '',
+      })
+    } else {
+      this.setState({
+        image: file.secure_url,
+        largeImage: file.eager[0].secure_url,
+      })
+    }
   }
 
   render() {
@@ -93,14 +99,15 @@ class CreateItem extends Component {
                   required
                   onChange={this.uploadFile}
                 />
-                {this.state.image && (
-                  <img
-                    width="200px"
-                    src={this.state.image}
-                    alt="Upload Preview"
-                  />
-                )}
               </label>
+
+              {this.state.image && (
+                <img
+                  width="200px"
+                  src={this.state.image}
+                  alt="Upload Preview"
+                />
+              )}
 
               <label htmlFor="title">
                 Title
