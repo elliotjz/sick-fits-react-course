@@ -359,7 +359,7 @@ const Mutation = {
     })
 
     return order
-  }
+  },
 };
 
 module.exports = Mutation;

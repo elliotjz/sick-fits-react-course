@@ -30,8 +30,7 @@ function totalItems(cart) {
 
 class TakeMyMoney extends Component {
   onToken = async (res, createOrder) => {
-    console.log('On Token called')
-    console.log(res.id)
+    NProgress.start()
     const order = await createOrder({
       variables: {
         token: res.id,
@@ -39,39 +38,45 @@ class TakeMyMoney extends Component {
     }).catch(err => {
       alert(err.message)
     })
-
-    console.log(order)
+    Router.push({
+      pathname: '/order',
+      query: { id: order.data.createOrder.id },
+    })
   }
 
   render() {
     return (
       <User>
-        {({ data: { me } }) => (
-          <Mutation
-            mutation={CREATE_ORDER_MUTATION}
-            refetchQueries={[{ query: CURRENT_USER_QUERY }]}
-          >
-            {createOrder => (
-              <StripeCheckout
-                amount={calcTotalPrice(me.cart)}
-                name="Sick Fits"
-                description={`Order of ${totalItems(me.cart)} items`}
-                image={
-                  me.cart.length && me.cart[0].item && me.cart[0].item.image
-                }
-                stripeKey="pk_test_9Z0L5pMhTR0S7DJxt4qonAvh"
-                currency="USD"
-                email={me.email}
-                token={res => this.onToken(res, createOrder)}
-              >
-                {this.props.children}
-              </StripeCheckout>
-            )}
-          </Mutation>
-        )}
+        {({ data: { me }, loading }) => {
+          if (loading) return null
+          return (
+            <Mutation
+              mutation={CREATE_ORDER_MUTATION}
+              refetchQueries={[{ query: CURRENT_USER_QUERY }]}
+            >
+              {createOrder => (
+                <StripeCheckout
+                  amount={calcTotalPrice(me.cart)}
+                  name="Sick Fits"
+                  description={`Order of ${totalItems(me.cart)} items`}
+                  image={
+                    me.cart.length && me.cart[0].item && me.cart[0].item.image
+                  }
+                  stripeKey="pk_test_9Z0L5pMhTR0S7DJxt4qonAvh"
+                  currency="USD"
+                  email={me.email}
+                  token={res => this.onToken(res, createOrder)}
+                >
+                  {this.props.children}
+                </StripeCheckout>
+              )}
+            </Mutation>
+          )
+        }}
       </User>
     )
   }
 }
 
 export default TakeMyMoney
+export { CREATE_ORDER_MUTATION }

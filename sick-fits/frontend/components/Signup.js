@@ -45,7 +45,7 @@ class Signup extends Component {
               onSubmit={async e => {
                 e.preventDefault()
                 const res = await signup()
-                console.log(res)
+
                 this.setState({
                   email: '',
                   name: '',
@@ -94,3 +94,4 @@ class Signup extends Component {
 }
 
 export default Signup
+export { SIGNUP_MUTATION }
